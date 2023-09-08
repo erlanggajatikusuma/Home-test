@@ -81,6 +81,11 @@ const FOOTER_BUTTON: ViewStyle = {
   flexDirection: 'row',
 };
 
+const FLAT_LIST: ViewStyle = {
+  paddingHorizontal: 14,
+  marginBottom: 68,
+};
+
 type ListItem = {
   id: string;
   image: ImageSourcePropType;
@@ -146,7 +151,9 @@ function App(): JSX.Element {
     <View style={ITEM}>
       <Image source={item.image} style={IMAGE} />
       <View style={FOOTER}>
-        <Text style={LIKES}>{item.likes} Like</Text>
+        <Text style={[LIKES, {color: isDarkMode ? color.white : color.black}]}>
+          {item.likes} Like
+        </Text>
         <View style={FOOTER_BUTTON}>
           <Button
             text="Like"
@@ -193,7 +200,7 @@ function App(): JSX.Element {
           renderItem={renderItem}
           fadingEdgeLength={22}
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{paddingHorizontal: 14}}
+          contentContainerStyle={FLAT_LIST}
         />
       </View>
     </SafeAreaView>
