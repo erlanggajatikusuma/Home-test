@@ -83,7 +83,7 @@ const FOOTER_BUTTON: ViewStyle = {
 
 const FLAT_LIST: ViewStyle = {
   paddingHorizontal: 14,
-  marginBottom: 68,
+  paddingBottom: 68,
 };
 
 type ListItem = {
