@@ -12,6 +12,7 @@ import {
   ImageSourcePropType,
   ImageStyle,
   SafeAreaView,
+  ScrollView,
   StatusBar,
   Text,
   TextStyle,
@@ -26,6 +27,12 @@ import {Button} from './components';
 
 const FLEX: ViewStyle = {
   flex: 1,
+};
+
+const SCROLL_VIEW: ViewStyle = {
+  flexGrow: 1,
+  justifyContent: 'flex-start',
+  alignItems: 'stretch',
 };
 
 const BUTTON_WRAPPER: ViewStyle = {
@@ -70,6 +77,7 @@ const FOOTER: ViewStyle = {
 };
 
 const LIKES: TextStyle = {
+  color: color.black,
   padding: 6,
   borderWidth: 1,
   borderRadius: 6,
@@ -151,9 +159,7 @@ function App(): JSX.Element {
     <View style={ITEM}>
       <Image source={item.image} style={IMAGE} />
       <View style={FOOTER}>
-        <Text style={[LIKES, {color: isDarkMode ? color.white : color.black}]}>
-          {item.likes} Like
-        </Text>
+        <Text style={LIKES}>{item.likes} Like</Text>
         <View style={FOOTER_BUTTON}>
           <Button
             text="Like"
@@ -176,33 +182,42 @@ function App(): JSX.Element {
         barStyle={isDarkMode ? 'light-content' : 'dark-content'}
         backgroundColor={backgroundStyle.backgroundColor}
       />
-      <View
-        style={{
-          backgroundColor: isDarkMode ? Colors.black : Colors.lighter,
-        }}>
-        <View style={BUTTON_WRAPPER}>
-          <Button text="Like All" onPress={handleLikeAll} style={BUTTON_TOP} />
-          <Button
-            text="Reset All"
-            onPress={handleResetAll}
-            style={[BUTTON_TOP, {backgroundColor: color.white}]}
-            textStyle={{color: color.black}}
-          />
-          <Button
-            text="Dislike All"
-            onPress={handleDislikeAll}
-            style={[BUTTON_DISLIKE, BUTTON_TOP]}
+      <ScrollView
+        contentInsetAdjustmentBehavior="automatic"
+        contentContainerStyle={SCROLL_VIEW}
+        showsVerticalScrollIndicator={false}>
+        <View
+          style={{
+            backgroundColor: isDarkMode ? Colors.black : Colors.lighter,
+          }}>
+          <View style={BUTTON_WRAPPER}>
+            <Button
+              text="Like All"
+              onPress={handleLikeAll}
+              style={BUTTON_TOP}
+            />
+            <Button
+              text="Reset All"
+              onPress={handleResetAll}
+              style={[BUTTON_TOP, {backgroundColor: color.white}]}
+              textStyle={{color: color.black}}
+            />
+            <Button
+              text="Dislike All"
+              onPress={handleDislikeAll}
+              style={[BUTTON_DISLIKE, BUTTON_TOP]}
+            />
+          </View>
+          <FlatList
+            data={listData}
+            keyExtractor={item => item.id}
+            renderItem={renderItem}
+            fadingEdgeLength={22}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={FLAT_LIST}
           />
         </View>
-        <FlatList
-          data={listData}
-          keyExtractor={item => item.id}
-          renderItem={renderItem}
-          fadingEdgeLength={22}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={FLAT_LIST}
-        />
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
