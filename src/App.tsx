@@ -5,7 +5,7 @@
  * @format
  */
 
-import React, {useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {
   FlatList,
   Image,
@@ -100,7 +100,35 @@ type ListItem = {
   likes: number;
 };
 
-function App(): JSX.Element {
+const Item = React.memo(
+  ({id, image, likes, handleLikePress, handleDislikePress}) => {
+    console.log('Item ===> ', id);
+    return (
+      <View style={ITEM}>
+        <Image source={image} style={IMAGE} />
+        <View style={FOOTER}>
+          <Text style={LIKES}>{likes} Like</Text>
+          <View style={FOOTER_BUTTON}>
+            <Button
+              text="Like"
+              // onPress={() => handleLike(item.id)}
+              onPress={() => handleLikePress(id)}
+              style={[FLEX, {marginRight: 8}]}
+            />
+            <Button
+              text="Dislike"
+              // onPress={() => handleDislike(item.id)}
+              onPress={() => handleDislikePress(id)}
+              style={[BUTTON_DISLIKE, FLEX]}
+            />
+          </View>
+        </View>
+      </View>
+    );
+  },
+);
+
+function MyApp(): JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
 
   const backgroundStyle = {
@@ -139,42 +167,61 @@ function App(): JSX.Element {
     setListData(updatedListData);
   };
 
-  const handleLike = (id: string) => {
+  const handleLike = useCallback((id: string) => {
+    // console.log('handle like ==>', id);
     setListData(prevState =>
       prevState.map(item =>
         item.id === id ? {...item, likes: item.likes + 1} : item,
       ),
     );
-  };
+  }, []);
 
-  const handleDislike = (id: string) => {
+  const handleDislike = useCallback((id: string) => {
+    // console.log('handle dislike ===> ', id);
     setListData(prevState =>
       prevState.map(item =>
         item.id === id ? {...item, likes: item.likes - 1} : item,
       ),
     );
+  }, []);
+
+  const renderItem = ({item}: {item: ListItem}) => {
+    // console.log('render Item ===> ', item.id);
+    const {id, image, likes} = item;
+    return (
+      <Item
+        id={id}
+        image={image}
+        likes={likes}
+        handleLikePress={handleLike}
+        handleDislikePress={handleDislike}
+      />
+    );
   };
 
-  const renderItem = ({item}: {item: ListItem}) => (
-    <View style={ITEM}>
-      <Image source={item.image} style={IMAGE} />
-      <View style={FOOTER}>
-        <Text style={LIKES}>{item.likes} Like</Text>
-        <View style={FOOTER_BUTTON}>
-          <Button
-            text="Like"
-            onPress={() => handleLike(item.id)}
-            style={[FLEX, {marginRight: 8}]}
-          />
-          <Button
-            text="Dislike"
-            onPress={() => handleDislike(item.id)}
-            style={[BUTTON_DISLIKE, FLEX]}
-          />
-        </View>
-      </View>
-    </View>
-  );
+  // const renderItem = ({item}: {item: ListItem}) => {
+  //   console.log('render', item.id);
+  //   return (
+  //     <View style={ITEM}>
+  //       <Image source={item.image} style={IMAGE} />
+  //       <View style={FOOTER}>
+  //         <Text style={LIKES}>{item.likes} Like</Text>
+  //         <View style={FOOTER_BUTTON}>
+  //           <Button
+  //             text="Like"
+  //             onPress={() => handleLike(item.id)}
+  //             style={[FLEX, {marginRight: 8}]}
+  //           />
+  //           <Button
+  //             text="Dislike"
+  //             onPress={() => handleDislike(item.id)}
+  //             style={[BUTTON_DISLIKE, FLEX]}
+  //           />
+  //         </View>
+  //       </View>
+  //     </View>
+  //   );
+  // };
 
   return (
     <SafeAreaView>
@@ -182,44 +229,41 @@ function App(): JSX.Element {
         barStyle={isDarkMode ? 'light-content' : 'dark-content'}
         backgroundColor={backgroundStyle.backgroundColor}
       />
-      <ScrollView
+      {/* <ScrollView
         contentInsetAdjustmentBehavior="automatic"
         contentContainerStyle={SCROLL_VIEW}
-        showsVerticalScrollIndicator={false}>
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.lighter,
-          }}>
-          <View style={BUTTON_WRAPPER}>
-            <Button
-              text="Like All"
-              onPress={handleLikeAll}
-              style={BUTTON_TOP}
-            />
-            <Button
-              text="Reset All"
-              onPress={handleResetAll}
-              style={[BUTTON_TOP, {backgroundColor: color.white}]}
-              textStyle={{color: color.black}}
-            />
-            <Button
-              text="Dislike All"
-              onPress={handleDislikeAll}
-              style={[BUTTON_DISLIKE, BUTTON_TOP]}
-            />
-          </View>
-          <FlatList
-            data={listData}
-            keyExtractor={item => item.id}
-            renderItem={renderItem}
-            fadingEdgeLength={22}
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={FLAT_LIST}
+        showsVerticalScrollIndicator={false}> */}
+      <View
+        style={{
+          backgroundColor: isDarkMode ? Colors.black : Colors.lighter,
+        }}>
+        <View style={BUTTON_WRAPPER}>
+          <Button text="Like All" onPress={handleLikeAll} style={BUTTON_TOP} />
+          <Button
+            text="Reset All"
+            onPress={handleResetAll}
+            style={[BUTTON_TOP, {backgroundColor: color.white}]}
+            textStyle={{color: color.black}}
+          />
+          <Button
+            text="Dislike All"
+            onPress={handleDislikeAll}
+            style={[BUTTON_DISLIKE, BUTTON_TOP]}
           />
         </View>
-      </ScrollView>
+        <FlatList
+          data={listData}
+          keyExtractor={item => item.id}
+          renderItem={renderItem}
+          fadingEdgeLength={22}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={FLAT_LIST}
+        />
+      </View>
+      {/* </ScrollView> */}
     </SafeAreaView>
   );
 }
 
+const App = React.memo(MyApp);
 export default App;
